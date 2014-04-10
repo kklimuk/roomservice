@@ -4,6 +4,7 @@ from flask import Flask, send_from_directory
 from flask_sockets import Sockets
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
+from geventwebsocket.exceptions import WebSocketError
 
 
 app = Flask(__name__)
@@ -20,9 +21,12 @@ rooms = {}
 @sockets.route('/rooms/')
 @sockets.route('/rooms/<room_id>')
 def room_id(socket, room_id='/'):
-	# tell the joining user if they start the room
+	# clean up the room
 	if room_id not in rooms:
 		rooms[room_id] = set()
+
+	# tell the joining user if they initiate the room
+	if len(rooms[room_id]):
 		socket.send(json.dumps({
 			'type': 'initiator',
 			'data': True
@@ -35,22 +39,28 @@ def room_id(socket, room_id='/'):
 
 	# inform all of the other people in the room about a join (if any)
 	for person in rooms[room_id]:
-		person.send(json.dumps({
-			'type': 'join',
-			'data': 'a wild one has joined the room'
-		}))
+		try:
+			person.send(json.dumps({
+				'type': 'join',
+				'data': 'a wild one has joined the room'
+			}))
+		except WebSocketError:
+			continue
 	rooms[room_id].add(socket)
 
 	# listen for messages from the socket and rebroadcast them to the room
 	while True:
 		message = socket.receive()
-		print message, socket
+		if message is None:
+			rooms[room_id].remove(socket)
+			break
+
 		for person in rooms[room_id]:
 			if person != socket:
 				try:
 					person.send(message)
-				except Exception, e:
-					rooms[room_id].remove(person)
+				except WebSocketError:
+					continue
 
 
 if __name__ == '__main__':

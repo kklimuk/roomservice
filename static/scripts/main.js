@@ -1,4 +1,4 @@
-var app = (function(RTCPeerConnection, SignallingChannel) {
+(function(RTCPeerConnection, SignallingChannel) {
 	'use strict';
 
 
@@ -22,9 +22,5 @@ var app = (function(RTCPeerConnection, SignallingChannel) {
 	};
 
 	SignallingChannel.listen(connection.onmessage.bind(connection));
-
-	return {
-		connection: connection
-	};
 
 })(window.RTCPeerConnection, window.SignallingChannel);

@@ -1,4 +1,4 @@
-var SignallingChannel = (function(WebSocket) {
+var SignallingChannel = (function(WebSocket, app) {
 	'use strict';
 
 	var SignallingChannel = {
@@ -19,10 +19,12 @@ var SignallingChannel = (function(WebSocket) {
 				};
 
 				socket.onmessage = function(message) {
-					var decoded = JSON.parse(message.data);
-					self.listeners.forEach(function(listener) {
-						listener(decoded);
-					});
+					if (message.data !== '') {
+						var decoded = JSON.parse(message.data);
+						self.listeners.forEach(function(listener) {
+							listener(decoded);
+						});
+					}
 				};
 
 				socket.onclose = function(event) {
@@ -43,15 +45,10 @@ var SignallingChannel = (function(WebSocket) {
 			});
 		},
 
-		logError: function(error) {
-			if (error.stack) {
-				return console.error(error.stack);
-			}
-			console.error(error.message);
-		}
+		logError: app.logError
 	};
 
 	SignallingChannel.__init__();
 
 	return SignallingChannel;
-})(window.WebSocket);
+})(window.WebSocket, window.app);

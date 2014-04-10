@@ -1,4 +1,4 @@
-var RTCPeerConnection = (function() {
+var RTCPeerConnection = (function(app) {
 	'use strict';
 
 	var RTCPeerConnection = webkitRTCPeerConnection;
@@ -74,12 +74,7 @@ var RTCPeerConnection = (function() {
 	};
 
 	// logging helper
-	RTCPeerConnection.prototype.logError = function(error) {
-		if (error.stack) {
-			return console.error(error.stack);
-		}
-		console.error(error.message);
-	};
+	RTCPeerConnection.prototype.logError = app.logError;
 
 	return RTCPeerConnection;
-})();
+})(window.app);
