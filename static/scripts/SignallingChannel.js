@@ -19,12 +19,10 @@ var SignallingChannel = (function(WebSocket, app) {
 				};
 
 				socket.onmessage = function(message) {
-					if (message.data !== '') {
-						var decoded = JSON.parse(message.data);
-						self.listeners.forEach(function(listener) {
-							listener(decoded);
-						});
-					}
+					var decoded = JSON.parse(message.data);
+					self.listeners.forEach(function(listener) {
+						listener(decoded);
+					});
 				};
 
 				socket.onclose = function(event) {
@@ -37,6 +35,13 @@ var SignallingChannel = (function(WebSocket, app) {
 
 		listen: function(listener) {
 			this.listeners.push(listener);
+		},
+
+		unlisten: function(listener) {
+			var index = this.listeners.indexOf(listener);
+			if (index !== -1) {
+				this.listeners.splice(index, 1);
+			}
 		},
 
 		signal: function(data) {

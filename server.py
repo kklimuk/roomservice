@@ -26,7 +26,7 @@ def room_id(socket, room_id='/'):
 		rooms[room_id] = set()
 
 	# tell the joining user if they initiate the room
-	if len(rooms[room_id]):
+	if len(rooms[room_id]) == 0:
 		socket.send(json.dumps({
 			'type': 'initiator',
 			'data': True
