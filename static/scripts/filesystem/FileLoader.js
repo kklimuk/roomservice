@@ -1,4 +1,4 @@
-var FileLoader = (function(FileReader, Directive) {
+var FileLoader = (function(FileReader, Promise) {
 	'use strict';
 
 	function Directive(el, template, replace) {
@@ -73,13 +73,13 @@ var FileLoader = (function(FileReader, Directive) {
 				return null;
 			}
 
-			return new Promise(function(resolve, reject) {
-			});
+			return file.readAsArrayBuffer();
 		}).filter(function(file) { return file; });
 
-
-		window.dispatchEvent(new CustomEvent('import.loaded', { detail: files }));
+		Promise.all(promises).then(function() {
+			window.dispatchEvent(new CustomEvent('imported', { detail: files }));
+		});
 	};
 
 	return FileLoader;
-})(window.FileReader, window.Directive);
+})(window.FileReader, window.Promise);

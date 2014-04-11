@@ -1,0 +1,19 @@
+fileloader {
+	box-sizing: border-box;
+	display: block;
+
+	height: 60px;
+}
+
+fileloader.dragged {
+	border: 2px dashed #e5e5e5;
+	padding: 10px;
+
+	font-size: 24px;
+	color: #777;
+	text-align: center;
+}
+
+fileloader.dragged > div {
+	display: none;
+}
