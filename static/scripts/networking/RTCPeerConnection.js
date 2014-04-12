@@ -21,7 +21,7 @@ var RTCPeerConnection = (function(app) {
 
 		this.channel.onmessage = function(message) {
 			if (typeof message.data === 'string') {
-				self.channel.oninstruction(JSON.parse(message.data));	
+				self.channel.oninstruction(JSON.parse(message.data));
 			}
 		};
 
@@ -38,7 +38,7 @@ var RTCPeerConnection = (function(app) {
 	// set the local description and send the offer/answer on its merry way
 	RTCPeerConnection.prototype.onlocaldescription = function(description) {
 		SignallingChannel.signal({
-			'type': 'description', 
+			'type': 'description',
 			'data': description
 		});
 		this.setLocalDescription(description);
