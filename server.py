@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, render_template
 from flask_sockets import Sockets
 from uuid import uuid4 as uuid
 
@@ -12,14 +12,16 @@ from geventwebsocket.exceptions import WebSocketError
 app = Flask(__name__)
 sockets = Sockets(app)
 
+rooms = {}
 
 @app.route('/')
+def home():	
+	return render_template('home.html', rooms=rooms)
 @app.route('/<room_id>')
 def index(room_id=None):
 	return send_from_directory('./static/html', 'index.html')
 
 
-rooms = {}
 @sockets.route('/rooms/')
 @sockets.route('/rooms/<room_id>')
 def room_id(socket, room_id='/'):

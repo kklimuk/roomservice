@@ -4,6 +4,8 @@ var service = (function(cache, ObservableArray) {
 	var opened_connections = new ObservableArray(),
 		room_files = new ObservableArray();
 
+  room_files.listen(RoomFileLister.onfilesloaded.bind(RoomFileLister));
+
 	cache.listen(function(files, type, cache) {
 		if (type === 'add') {
 			room_files.extend(files.map(function(file) {
@@ -41,7 +43,7 @@ var service = (function(cache, ObservableArray) {
 
 	return {
 		connections: opened_connections,
-		files: room_files 
+		files: room_files
 	};
 
 })(window.cache, window.ObservableArray)
