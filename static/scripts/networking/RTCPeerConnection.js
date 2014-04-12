@@ -41,12 +41,12 @@ var RTCPeerConnection = (function(app) {
 	RTCPeerConnection.prototype.setupChannel = function() {
 		var self = this;
 		this.channel.onopen = function() {
-			console.log('Channel open, capitan!');
+			console.log('Channel open, captain!');
 		};
 
 		this.channel.onmessage = function(message) {
 			if (typeof message.data === 'string') {
-				self.channel.oninstruction(JSON.parse(message.data));	
+				self.channel.oninstruction(JSON.parse(message.data));
 			}
 		};
 
@@ -63,7 +63,7 @@ var RTCPeerConnection = (function(app) {
 	// set the local description and send the offer/answer on its merry way
 	RTCPeerConnection.prototype.onlocaldescription = function(description) {
 		SignallingChannel.signal({
-			'type': 'description', 
+			'type': 'description',
 			'data': description
 		});
 		this.setLocalDescription(description);
