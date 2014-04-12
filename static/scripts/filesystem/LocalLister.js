@@ -31,7 +31,7 @@ var LocalLister = (function() {
 
 		onremovefiles: function() {
 			this.list.innerHTML = '';
-			files.clear();
+			window.cache.clear();
 		}
 	};
 
