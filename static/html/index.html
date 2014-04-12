@@ -6,18 +6,35 @@
 	<link rel="stylesheet" type="text/css" href="/static/styles/styles.css">
 </head>
 <body>
-	<fileloader></fileloader>
+	<aside>
+		<section id="room-files">
+			<h3>Room files:</h3>
+			<ul></ul>	
+		</section>
+
+		<section id="my-files">
+			<h3>File Cache: <a href="#">[erase]</a></h3>
+			<ul></ul>	
+		</section>
+	</aside>
+
+	<fileloader class="dragged"></fileloader>
 
 	<script id="file-loader" type="text/template">
-	<div>
-		<label>Share Files:</label>
-		<input type="file" class="form-control" multiple/>
-	</div>
+		<div>Drag Files Here</div>
+	</script>
+
+	
+	<script id="file-local" type="text/template">
+		<a></a>
 	</script>
 	
 	<script type="text/javascript" src="/static/scripts/app.js"></script>
+	<script type="text/javascript" src="/static/scripts/ObservableArray.js"></script>
 	<script type="text/javascript" src="/static/scripts/filesystem/FileSystem.js"></script>
 	<script type="text/javascript" src="/static/scripts/filesystem/FileLoader.js"></script>
+	<script type="text/javascript" src="/static/scripts/filesystem/LocalLister.js"></script>
+	<script type="text/javascript" src="/static/scripts/filesystem/files.js"></script>
 	<script type="text/javascript" src="/static/scripts/networking/SignallingChannel.js"></script>
 	<script type="text/javascript" src="/static/scripts/networking/RTCPeerConnection.js"></script>
 	<script type="text/javascript" src="/static/scripts/networking/connections.js"></script>

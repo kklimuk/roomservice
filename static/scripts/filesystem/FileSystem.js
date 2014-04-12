@@ -224,6 +224,35 @@ window.FileSystem = (function(navigator, Promise) {
 		});
 	};
 
+	FileSystem.prototype.getRoom = function(room) {
+		var self = this;
+		return new Promise(function(resolve, reject) {
+			return self.getURL(room).catch(function(error) {
+				return self.getRoot().then(function(root) {
+					return root.makeDirectory(room);
+				});
+			}).then(function(directory) {
+				resolve(directory);
+			}).catch(reject);
+		});
+	}
+
+	FileSystem.prototype.getRoomFiles = function(room) {
+		return this.getRoom(room).then(function(room_directory) {
+			return room_directory;
+		}).then(function(room) {
+			return room.readEntries();
+		}).then(function(entries) {
+			var promises = entries.filter(function(entry) { 
+				return entry.isFile; 
+			}).map(function(entry) {
+				return entry.getFile();
+			});
+			
+			return Promise.all(promises);
+		});
+	};
+
 	File.prototype.__read__ = function(cache, func) {
 		var self = this;
 		return new Promise(function(resolve, reject) {
@@ -234,7 +263,7 @@ window.FileSystem = (function(navigator, Promise) {
 			var reader = new FileReader();
 
 			reader.onload = function(data) {
-				self[cache] = data;
+				self[cache] = data.target.result;
 				resolve(data);
 			};
 			reader.onerror = reject;

@@ -5,7 +5,6 @@
 		new FileLoader(document.querySelector('fileloader'));
 	});
 
-
 	// handle exiting the page
 	window.addEventListener('beforeunload', function() {
 		connections.forEach(function(connection) {
