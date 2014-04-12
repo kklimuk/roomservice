@@ -2,7 +2,7 @@ var connections = (function(app, RTCPeerConnection, SignallingChannel) {
 	'use strict';
 
 	var connections = [];
-	function connect(initiator, id) {
+	connections.connect = function connect(initiator, id) {
 		var connection = new RTCPeerConnection({ 
 			"iceServers": [{ "url": "stun:stun.l.google.com:19302" }] 
 		}, {
@@ -17,8 +17,8 @@ var connections = (function(app, RTCPeerConnection, SignallingChannel) {
 				this.setupChannel();
 			}.bind(connection);
 		} else {
-			this.channel = this.createDataChannel(app.room);
-			this.setupChannel();
+			connection.channel = connection.createDataChannel(app.room);
+			connection.setupChannel();
 		}
 
 		// triggered by channel creation (see RTCPeerConnection)
@@ -31,12 +31,16 @@ var connections = (function(app, RTCPeerConnection, SignallingChannel) {
 			if (event.candidate) {
 				SignallingChannel.signal({
 					'type': 'candidate',
+					'source': app.id,
+					'target': this.id,
 					'data': event.candidate
 				});
 			}
 		};
 
 		SignallingChannel.listen(connection.onmessage.bind(connection));
+
+		connections.push(connection);
 		return connection;
 	}
 

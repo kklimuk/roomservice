@@ -20,10 +20,9 @@ def index(room_id=None):
 
 
 rooms = {}
-# @sockets.route('/rooms/')
+@sockets.route('/rooms/')
 @sockets.route('/rooms/<room_id>')
 def room_id(socket, room_id='/'):
-	print room_id
 	# clean up the room
 	if room_id not in rooms:
 		rooms[room_id] = set()
@@ -61,12 +60,18 @@ def room_id(socket, room_id='/'):
 			rooms[room_id].remove(node)
 			break
 
+		decoded = json.loads(message)
 		for person in rooms[room_id]:
-			if person[1] != socket:
-				try:
+			if 'target' in decoded:
+				if decoded['target'] == person[0]:
 					person[1].send(message)
-				except WebSocketError:
-					continue
+					break
+			else:
+				if person[1] != socket:
+					try:
+						person[1].send(message)
+					except WebSocketError:
+						continue
 
 
 if __name__ == '__main__':

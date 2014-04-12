@@ -39,6 +39,8 @@ var RTCPeerConnection = (function(app) {
 	RTCPeerConnection.prototype.onlocaldescription = function(description) {
 		SignallingChannel.signal({
 			'type': 'description',
+			'source': app.id,
+			'target': this.id,
 			'data': description
 		});
 		this.setLocalDescription(description);

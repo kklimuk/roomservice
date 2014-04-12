@@ -1,5 +1,5 @@
 Flask==0.10.1
-Flask-Sockets==0.1
+-e git://github.com/kklimuk/flask-sockets.git@d884a689ad53fc29188a19305c2701d4f8f5c3e2#egg=Flask_Sockets-master
 Jinja2==2.7.2
 MarkupSafe==0.19
 Werkzeug==0.9.4

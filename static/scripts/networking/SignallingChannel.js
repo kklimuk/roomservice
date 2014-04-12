@@ -24,15 +24,17 @@ var SignallingChannel = (function(WebSocket, app) {
 
 					if (decoded.type === 'joined') {
 						app.id = decoded.data.id;
+						decoded.data.nodes.forEach(function(node) {
+							window.connections.connect(true, node);
+						});
 					} else if (decoded.type === 'join') {
-						
+						window.connections.connect(false, decoded.data);
+					} else {
+						self.listeners.forEach(function(listener) {
+							listener(decoded);
+						});
 					}
-
-					self.listeners.forEach(function(listener) {
-						listener(decoded);
-					});
-				};
-
+				}
 				socket.onclose = function(event) {
 					console.warn("Socket closed:", event.code, event.reason, event.wasClean);
 				};
