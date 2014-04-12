@@ -2,6 +2,8 @@ import json
 
 from flask import Flask, send_from_directory
 from flask_sockets import Sockets
+from uuid import uuid4 as uuid
+
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 from geventwebsocket.exceptions import WebSocketError
@@ -18,47 +20,51 @@ def index(room_id=None):
 
 
 rooms = {}
-@sockets.route('/rooms/')
+# @sockets.route('/rooms/')
 @sockets.route('/rooms/<room_id>')
 def room_id(socket, room_id='/'):
+	print room_id
 	# clean up the room
 	if room_id not in rooms:
 		rooms[room_id] = set()
 
-	# tell the joining user if they initiate the room
-	if len(rooms[room_id]) == 0:
-		socket.send(json.dumps({
-			'type': 'initiator',
-			'data': True
-		}))
-	else:
-		socket.send(json.dumps({
-			'type': 'initiator',
-			'data': False
-		}))
+	# create unique id
+	uid = str(uuid())
 
 	# inform all of the other people in the room about a join (if any)
 	for person in rooms[room_id]:
 		try:
-			person.send(json.dumps({
+			person[1].send(json.dumps({
 				'type': 'join',
-				'data': 'a wild one has joined the room'
+				'data': uid
 			}))
 		except WebSocketError:
 			continue
-	rooms[room_id].add(socket)
+
+	# send the unique ids for the joining node
+	socket.send(json.dumps({
+		'type': 'joined',
+		'data': {
+			'id': uid,
+			'nodes': [ person[0] for person in rooms[room_id] ]
+		}
+	}))
+
+	# add joining node to room
+	node = (uid, socket)
+	rooms[room_id].add(node)
 
 	# listen for messages from the socket and rebroadcast them to the room
 	while True:
 		message = socket.receive()
 		if message is None:
-			rooms[room_id].remove(socket)
+			rooms[room_id].remove(node)
 			break
 
 		for person in rooms[room_id]:
-			if person != socket:
+			if person[1] != socket:
 				try:
-					person.send(message)
+					person[1].send(message)
 				except WebSocketError:
 					continue
 

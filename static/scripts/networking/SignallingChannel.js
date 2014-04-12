@@ -20,6 +20,14 @@ var SignallingChannel = (function(WebSocket, app) {
 
 				socket.onmessage = function(message) {
 					var decoded = JSON.parse(message.data);
+					console.log(decoded);
+
+					if (decoded.type === 'joined') {
+						app.id = decoded.data.id;
+					} else if (decoded.type === 'join') {
+						
+					}
+
 					self.listeners.forEach(function(listener) {
 						listener(decoded);
 					});

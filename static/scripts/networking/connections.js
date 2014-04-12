@@ -1,14 +1,25 @@
-var connections = (function(RTCPeerConnection, SignallingChannel) {
+var connections = (function(app, RTCPeerConnection, SignallingChannel) {
 	'use strict';
 
 	var connections = [];
-	function connect(initiator) {
+	function connect(initiator, id) {
 		var connection = new RTCPeerConnection({ 
 			"iceServers": [{ "url": "stun:stun.l.google.com:19302" }] 
 		}, {
 			"optional": [{ "RtpDataChannels": true }]
 		});
-		connection.initiator = initiator ? true : false;
+
+		connection.id = id;
+
+		if (!initiator) {
+			connection.ondatachannel = function(event) {
+				this.channel = event.channel;
+				this.setupChannel();
+			}.bind(connection);
+		} else {
+			this.channel = this.createDataChannel(app.room);
+			this.setupChannel();
+		}
 
 		// triggered by channel creation (see RTCPeerConnection)
 		connection.onnegotiationneeded = function() {
@@ -40,6 +51,5 @@ var connections = (function(RTCPeerConnection, SignallingChannel) {
 	});
 
 
-	connections.push(connect());
 	return connections;
-})(window.RTCPeerConnection, window.SignallingChannel);
+})(window.app, window.RTCPeerConnection, window.SignallingChannel);

@@ -5,36 +5,10 @@ var RTCPeerConnection = (function(app) {
 
 	// respond to signalling channel messages
 	RTCPeerConnection.prototype.onmessage = function(message) {
-		if (message.type === 'initiator') {
-			this.oninit(message);
-		} else if (message.type === 'join') {
-			this.onremotejoin();
-		} else if (message.type === 'description') {
+		if (message.type === 'description') {
 			this.onremotedescription(message);
 		} else if (message.type === 'candidate') {
 			this.onaddicecandidate(message);
-		}
-	};
-
-	RTCPeerConnection.prototype.oninit = function(message) {
-		this.initiator = message.data;
-		if (!this.initiator) {
-			var self = this;
-			this.ondatachannel = function(event) {
-				self.channel = event.channel;
-				self.setupChannel();
-			};
-		}
-	};
-
-	// when a remote joins, set up the datachannel
-	RTCPeerConnection.prototype.onremotejoin = function() {
-		var self = this;
-		if (this.initiator) {
-			if (!this.channel) {
-				this.channel = this.createDataChannel(window.location.pathname);
-				this.setupChannel();
-			}
 		}
 	};
 
@@ -42,6 +16,7 @@ var RTCPeerConnection = (function(app) {
 		var self = this;
 		this.channel.onopen = function() {
 			console.log('Channel open, capitan!');
+			window.dispatchEvent(new CustomEvent('connectionopen', { detail: self }));
 		};
 
 		this.channel.onmessage = function(message) {
