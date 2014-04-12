@@ -6,6 +6,7 @@ var SignallingChannel = (function(WebSocket, app) {
 
 		__init__: function() {
 			this.listeners = [];
+			this.listener_hash = {};
 			this.bindSocket();
 		},
 
@@ -20,7 +21,6 @@ var SignallingChannel = (function(WebSocket, app) {
 
 				socket.onmessage = function(message) {
 					var decoded = JSON.parse(message.data);
-					console.log(decoded);
 
 					if (decoded.type === 'joined') {
 						app.id = decoded.data.id;
@@ -29,14 +29,20 @@ var SignallingChannel = (function(WebSocket, app) {
 						});
 					} else if (decoded.type === 'join') {
 						window.connections.connect(false, decoded.data);
+					} else if (decoded.source) {
+						var target = self.listener_hash[decoded.source];
+						if (target) {
+							target(decoded);
+						}
 					} else {
 						self.listeners.forEach(function(listener) {
 							listener(decoded);
 						});
 					}
 				}
+
 				socket.onclose = function(event) {
-					console.warn("Socket closed:", event.code, event.reason, event.wasClean);
+					console.warn("Server connection terminated:", event.code);
 				};
 
 				socket.onerror = reject;
@@ -45,12 +51,14 @@ var SignallingChannel = (function(WebSocket, app) {
 
 		listen: function(listener) {
 			this.listeners.push(listener);
+			this.listener_hash[listener.id] = listener;
 		},
 
 		unlisten: function(listener) {
 			var index = this.listeners.indexOf(listener);
 			if (index !== -1) {
 				this.listeners.splice(index, 1);
+				delete this.listener_hash[listener.id];
 			}
 		},
 

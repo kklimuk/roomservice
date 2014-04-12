@@ -38,7 +38,10 @@ var connections = (function(app, RTCPeerConnection, SignallingChannel) {
 			}
 		};
 
-		SignallingChannel.listen(connection.onmessage.bind(connection));
+		connection.listener = connection.onmessage.bind(connection);
+		connection.listener.id = connection.id;
+
+		SignallingChannel.listen(connection.listener);
 
 		connections.push(connection);
 		return connection;
@@ -48,6 +51,8 @@ var connections = (function(app, RTCPeerConnection, SignallingChannel) {
 	// handle remote connection closes
 	window.addEventListener('connectionclosed', function(event) {
 		var connection = event.detail;
+		console.warn("Connection closed:", connection.id);
+
 		var index = connections.indexOf(connection);
 		if (index !== -1) {
 			connections.splice(index, 1);
