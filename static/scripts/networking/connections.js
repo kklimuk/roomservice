@@ -5,12 +5,14 @@ var connections = (function(app, RTCPeerConnection, SignallingChannel) {
 	connections.connect = function connect(initiator, id) {
 		var connection = new RTCPeerConnection({ 
 			"iceServers": [{ "url": "stun:stun.l.google.com:19302" }] 
-		}, {
-			"optional": [{ "RtpDataChannels": true }]
 		});
 
+		// the unique id for every connection, sent from the server
 		connection.id = id;
+		// queue for files being downloaded through the connection
+		connection.queue = [];
 
+		// whether the client is the one initiates connections with the peer or wait on them to
 		if (!initiator) {
 			connection.ondatachannel = function(event) {
 				this.channel = event.channel;

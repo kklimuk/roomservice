@@ -4,6 +4,7 @@ var app = (function() {
 	return {
 		id: 'self',
 		room: window.location.pathname,
+		MAX_CHUNK_SIZE: 1024*64,
 		
 		logError: function(error) {
 			if (error.stack) {

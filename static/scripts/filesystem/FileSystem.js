@@ -264,13 +264,11 @@ window.FileSystem = (function(navigator, Promise) {
 
 			reader.onload = function(data) {
 				self[cache] = data.target.result;
-				resolve(data);
+				resolve(data.target.result);
 			};
 			reader.onerror = reject;
 
 			func.call(self, reader);
-		}).then(function(event) {
-			return event.target.result;
 		});
 	};
 

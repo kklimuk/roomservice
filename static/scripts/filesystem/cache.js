@@ -4,13 +4,45 @@ var cache = (function(app, LocalLister, FileSystem, ObservableArray) {
 	var fs = new FileSystem(1024*1024*1024),
 		room_directory = fs.getRoom(app.room);
 
+	// create the cache and hash for files
 	var cache = new ObservableArray();
+	cache.hash = {};
+
+	cache.storeBlob = function(blob) {
+		var cached_entry = null;
+		room_directory.then(function(directory) {
+			return directory.makeFileEntry(blob.name, true);
+		}).then(function(entry) {
+			cached_entry = entry;
+			return entry.write(blob);
+		}).then(function() {
+			return cached_entry.getFile();
+		}).then(function(file) {
+			cache.push(file);
+		}).catch(function() {
+			console.warn('Entry ' + blob.name + ' already previously stored.')
+		});
+	};
+
+	// populate the hash
+	cache.listen(function(files, type) {
+		if (type === 'add') {
+			files.forEach(function(file) {
+				cache.hash[file.name] = file;
+			});
+		} else if (type === 'remove') {
+			files.forEach(function(file) {
+				delete cache.hash[file.name];
+			});
+		}
+	});
+
 	// handle adds on the cache
 	cache.listen(LocalLister.onfilesloaded.bind(LocalLister));
 
 	// handle removes
 	cache.listen(function(cleared, type) {
-		if (type === 'remove') {
+		if (type === 'remove' && cleared.length === 0) {
 			room_directory.then(function(room) {
 				return room.removeRecursively();
 			}).then(function() {

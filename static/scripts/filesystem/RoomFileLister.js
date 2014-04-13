@@ -56,7 +56,10 @@ var RoomFileLister = (function(app) {
 			}
 
 			a.addEventListener('click', function(event){
-				window.dispatchEvent(new CustomEvent('onfilerequested', { detail: content }));
+				var data = content.self ? content.files.filter(function(file) {
+					return app.id === file.source;
+				}) : content.files;
+				window.dispatchEvent(new CustomEvent('filerequest', { detail: data }));
 			});
 
 			return el;
