@@ -5,13 +5,13 @@
 	<title>Room Service</title>
 </head>
 <body>
-<h1>Existing rooms</h1>
-<h2>There are currently {{rooms|length}} rooms.</h2>
-<ol>
-{% for room in rooms %}
-{% set path = '/' + room %}
-<li><a href={{ path }}>{{room}}</a> with {{ rooms[room]|length }} nodes.</li>
-{% endfor %}
-</ol>
+	<h1>Existing rooms</h1>
+	<h2>There are currently {{rooms|length}} rooms.</h2>
+	<ol>
+		{% for room in rooms %}
+			{% set path = '/' + room %}
+			<li><a href={{ path }}>{{ room }}</a> with {{ rooms[room]|length }} nodes.</li>
+		{% endfor %}
+	</ol>
 </body>
 </html>

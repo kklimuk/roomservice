@@ -1,4 +1,4 @@
-var SignallingChannel = (function(WebSocket, app) {
+var SignallingChannel = (function(app, WebSocket) {
 	'use strict';
 
 	var SignallingChannel = {
@@ -13,7 +13,7 @@ var SignallingChannel = (function(WebSocket, app) {
 		bindSocket: function() {
 			var self = this;
 			this.socket = new Promise(function(resolve, reject) {
-				var socket = new WebSocket('ws://' + window.location.host + '/rooms' + window.location.pathname);
+				var socket = new WebSocket('ws://' + window.location.host + '/rooms' + app.room);
 				
 				socket.onopen = function(event) {
 					resolve(socket);
@@ -24,6 +24,8 @@ var SignallingChannel = (function(WebSocket, app) {
 
 					if (decoded.type === 'joined') {
 						app.id = decoded.data.id;
+						window.RoomFileLister.__init__();
+
 						decoded.data.nodes.forEach(function(node) {
 							window.connections.connect(true, node);
 						});
@@ -74,4 +76,4 @@ var SignallingChannel = (function(WebSocket, app) {
 	SignallingChannel.__init__();
 
 	return SignallingChannel;
-})(window.WebSocket, window.app);
+})(window.app, window.WebSocket);

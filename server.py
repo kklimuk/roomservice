@@ -17,12 +17,13 @@ rooms = {}
 @app.route('/')
 def home():	
 	return render_template('home.html', rooms=rooms)
+
+
 @app.route('/<room_id>')
 def index(room_id=None):
 	return send_from_directory('./static/html', 'index.html')
 
 
-@sockets.route('/rooms/')
 @sockets.route('/rooms/<room_id>')
 def room_id(socket, room_id='/'):
 	# clean up the room
