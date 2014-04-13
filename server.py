@@ -78,5 +78,5 @@ def room_id(socket, room_id='/'):
 
 
 if __name__ == '__main__':
-    server = pywsgi.WSGIServer(('', 5000), app, handler_class=WebSocketHandler)
+    server = pywsgi.WSGIServer(('0.0.0.0', 5000), app, handler_class=WebSocketHandler)
     server.serve_forever()

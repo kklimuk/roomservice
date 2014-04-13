@@ -28,6 +28,17 @@ var RoomFileLister = (function(app) {
 			this.content[file.name].files.push(file);
 		},
 
+		removeFileContent: function(file) {
+			if (file.name in this.content) {
+				this.content[file.name] = {
+					self: app.id === file.source ? false : this.content[file.name].self,
+					files: this.content[file.name].files.filter(function(f) {
+						return file.name !== f.name || file.source !== f.source;
+					})
+				}
+			}
+		},
+
 		makeElement: function(content) {
 			if (content.files.length === 0) {
 				return false;
@@ -54,13 +65,15 @@ var RoomFileLister = (function(app) {
 		onfilesloaded: function(files, type) {
 			if (type === 'add') {
 				files.forEach(this.addFileContent.bind(this));
+			} else if (type === 'remove') {
+				files.forEach(this.removeFileContent.bind(this));
+			}
 
-				this.list.innerHTML = '';
-				for (var index in this.content) {
-					var el = this.makeElement(this.content[index]);
-					if (el) {
-						this.list.appendChild(el);
-					}
+			this.list.innerHTML = '';
+			for (var index in this.content) {
+				var el = this.makeElement(this.content[index]);
+				if (el) {
+					this.list.appendChild(el);
 				}
 			}
 		}

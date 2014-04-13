@@ -73,7 +73,5 @@ var SignallingChannel = (function(app, WebSocket) {
 		logError: app.logError
 	};
 
-	SignallingChannel.__init__();
-
 	return SignallingChannel;
 })(window.app, window.WebSocket);

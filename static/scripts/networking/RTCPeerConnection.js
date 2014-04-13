@@ -15,7 +15,7 @@ var RTCPeerConnection = (function(app) {
 	RTCPeerConnection.prototype.setupChannel = function() {
 		var self = this;
 		this.channel.onopen = function() {
-			console.log('Channel open, capitan!');
+			console.warn('Connection open:', self.id);
 			window.dispatchEvent(new CustomEvent('connectionopen', { detail: self }));
 		};
 
@@ -29,6 +29,10 @@ var RTCPeerConnection = (function(app) {
 			if (instruction.type === 'close') {
 				window.dispatchEvent(new CustomEvent('connectionclosed', { detail: self }));
 				self.close();
+			} else if (instruction.type === 'add') {
+				window.dispatchEvent(new CustomEvent('filesarrived', { detail: instruction.data }));
+			} else if (instruction.type === 'clear') {
+				window.dispatchEvent(new CustomEvent('filescleared', { detail: self }));
 			}
 		};
 

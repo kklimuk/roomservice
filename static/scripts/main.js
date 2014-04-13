@@ -1,8 +1,10 @@
-(function(FileLoader, connections) {
+(function(connections, FileLoader, SignallingChannel) {
 	'use strict';
 
 	window.addEventListener('DOMContentLoaded', function() {
 		new FileLoader(document.querySelector('fileloader'));
+
+		SignallingChannel.__init__();
 	});
 
 	// handle exiting the page
@@ -19,4 +21,4 @@
 
 // Imma let you finish, but I've got the best commit of all TIMEEE
 // HOW BOUT DAT RPG CHEATIN'??!?!??!?!?
-})(window.FileLoader, window.connections);
+})(window.connections, window.FileLoader, window.SignallingChannel);
