@@ -5,13 +5,26 @@
 	<title>Room Service</title>
 </head>
 <body>
-	<h1>Existing rooms</h1>
-	<h2>There are currently {{rooms|length}} rooms.</h2>
+	{% if not search %}
+		<h1>Existing rooms</h1>
+		<h2>There are currently {{rooms|length}} rooms.</h2>
+	{% else %}
+		<h1>Search results</h1>
+		<h2>{{rooms|length}} room(s) matching the query '{{ query }}':</h2>
+	{% endif %}
+
 	<ol>
 		{% for room in rooms %}
 			{% set path = '/' + room %}
-			<li><a href={{ path }}>{{ room }}</a> with {{ rooms[room]|length }} nodes.</li>
+			<li><a href={{ path }}>{{room}}</a> with {{ rooms[room]|length }} nodes.</li>
 		{% endfor %}
 	</ol>
+	
+	<h3>Search for rooms:</h3>
+	<form name="input" action="/" method="post">
+		<input type="text" name="search">
+		<input type="submit" value="Search">
+	</form>
 </body>
 </html>
+
