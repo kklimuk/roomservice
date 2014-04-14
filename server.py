@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask, send_from_directory, render_template, request
+from flask import Flask, send_from_directory, render_template, request, redirect, url_for
 from flask_sockets import Sockets
 from uuid import uuid4 as uuid
 
@@ -17,15 +17,20 @@ rooms = {}
 @app.route('/', methods=['GET', 'POST'])
 def home():
 	if request.method == 'POST':
-		query = request.form['search']
-		queried_rooms = { k:v for k,v in rooms.items() if query in k }
-		return render_template('home.html', rooms=queried_rooms, search=True, query=query)
+		search = request.form['formtype']
+		if search == '1':
+			query = request.form['search']
+			queried_rooms = { k:v for k,v in rooms.items() if query in k }
+			return render_template('home.html', rooms=queried_rooms, search=True, query=query)
+		else:
+			return redirect(url_for('index', room_id = request.form['roomname']))
 	else:
 		return render_template('home.html', rooms=rooms, search=False)
 
 @app.route('/<room_id>')
 def index(room_id=None):
 	return send_from_directory('./static/html', 'index.html')
+
 
 
 @sockets.route('/rooms/<room_id>')
