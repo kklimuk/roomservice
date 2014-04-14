@@ -43,6 +43,19 @@ aside > section {
 	flex: 1;
 }
 
+div.progress {
+	height: 20px;
+	border: 1px solid #000;
+	margin-bottom: 10px;
+}
+
+div.progress > div {
+	height: inherit;
+	width: 0%;
+	
+	background: #008000;
+}
+
 fileloader {
 	box-sizing: border-box;
 	

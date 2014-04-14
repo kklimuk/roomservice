@@ -4,13 +4,33 @@ var RoomFileLister = (function(app) {
 	var RoomFileLister = {
 		el: document.getElementById('room-files'),
 		list: document.querySelector('#room-files ul'),
-		template: document.getElementById('file-local'),
+		template: document.getElementById('file-remote'),
 
 		content: {},
+		elements: {},
 
 		__init__: function() {
 			this.onfilesloaded([].slice.call(window.service.files), 'add');
 			window.service.files.listen(this.onfilesloaded.bind(this));
+			
+			var self = this;
+			window.addEventListener('fileprogress', function(event) {
+				var name = event.detail.name,
+					completion = event.detail.completion;
+
+				var el = self.elements[name];
+				var item = el.querySelector('.progress-item');
+				if (!item) {
+					item = document.createElement('li');
+					item.classList.add('progress-item');
+					item.innerHTML = '<div class="progress"><div></div></div>';
+					el.querySelector('ul').appendChild(item);
+				} else if (completion === 100) {
+					item.parentNode.removeChild(item);
+				} else {
+					item.querySelector('.progress > div').style.width = completion + '%';
+				}
+			});
 		},
 
 		addFileContent: function(file) {
@@ -50,9 +70,18 @@ var RoomFileLister = (function(app) {
 
 			var a = el.querySelector('a');
 			a.href = '#';
-			a.innerText = content.files[0].name + ' (' + content.files.length + ')';
+			a.innerText = content.files[0].name;
+
+			var ul = el.querySelector('ul');
+			
+			var count_item = document.createElement('li');
+			count_item.innerHTML = 'Owned by <strong>' + content.files.length + '</strong> people.'
+			ul.appendChild(count_item);
+
 			if (content.self) {
-				a.innerText += ' (cached)';
+				var self_item = document.createElement('li');
+				self_item.innerText = 'Cached by you.';
+				ul.appendChild(self_item);
 			}
 
 			a.addEventListener('click', function(event){
@@ -61,6 +90,8 @@ var RoomFileLister = (function(app) {
 				}) : content.files;
 				window.dispatchEvent(new CustomEvent('filerequest', { detail: data }));
 			});
+
+			this.elements[content.files[0].name] = el;
 
 			return el;
 		},

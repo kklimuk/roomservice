@@ -94,7 +94,7 @@ var RTCPeerConnection = (function(app, cache) {
 		}
 
 		this.queue[0].chunk_count = Math.ceil(data.length / app.MAX_CHUNK_SIZE);
-		this.queue[0].remaining = this.queue[0];
+		this.queue[0].remaining = this.queue[0].chunk_count;
 		this.queue[0].type = data.type;
 	};
 
@@ -102,6 +102,11 @@ var RTCPeerConnection = (function(app, cache) {
 		var compiler = this.queue[0];
 		compiler.buffers.push(chunk)
 		compiler.remaining -= 1;
+
+		window.dispatchEvent(new CustomEvent('fileprogress', { detail: {
+			name: compiler.name,
+			completion: Math.round((compiler.buffers.length / compiler.chunk_count) * 100)
+		} }));
 
 		if (compiler.remaining === 0) {
 			var blob = new Blob(compiler.buffers, { type: compiler.type });

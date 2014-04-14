@@ -115,8 +115,6 @@ var service = (function(app, cache, ObservableArray) {
 	// download for a file has been completed
 	window.addEventListener('downloadcomplete', function(event) {
 		var blob = event.detail;
-		cache.storeBlob(blob);
-
 		force_download(blob);
 	});
 

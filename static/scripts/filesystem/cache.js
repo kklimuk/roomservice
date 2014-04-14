@@ -8,22 +8,6 @@ var cache = (function(app, LocalLister, FileSystem, ObservableArray) {
 	var cache = new ObservableArray();
 	cache.hash = {};
 
-	cache.storeBlob = function(blob) {
-		var cached_entry = null;
-		room_directory.then(function(directory) {
-			return directory.makeFileEntry(blob.name, true);
-		}).then(function(entry) {
-			cached_entry = entry;
-			return entry.write(blob);
-		}).then(function() {
-			return cached_entry.getFile();
-		}).then(function(file) {
-			cache.push(file);
-		}).catch(function() {
-			console.warn('Entry ' + blob.name + ' already previously stored.')
-		});
-	};
-
 	// populate the hash
 	cache.listen(function(files, type) {
 		if (type === 'add') {
@@ -54,6 +38,26 @@ var cache = (function(app, LocalLister, FileSystem, ObservableArray) {
 	// handle files that are already cached in the room
 	fs.getRoomFiles(app.room).then(function(files) {
 		cache.extend(files);
+	});
+
+	// handle completed download
+	window.addEventListener('downloadcomplete', function(event) {
+		var blob = event.detail;
+
+		var cached_entry = null;
+		room_directory.then(function(directory) {
+			return directory.makeFileEntry(blob.name, true);
+		}).then(function(entry) {
+			cached_entry = entry;
+			return entry.write(blob);
+		}).then(function() {
+			return cached_entry.getFile();
+		}).then(function(file) {
+			cache.push(file);
+		}).catch(function(error) {
+			console.warn('Entry ' + blob.name + ' already previously stored.')
+			app.logError(error);
+		});
 	});
 
 	// handle arriving imports
