@@ -80,7 +80,7 @@ var RoomFileLister = (function(app) {
 			var properties = ul.querySelector('li.size');
 
 			var size = file.size / 1024 > 1024 ? (file.size / (1024 * 1024)).toFixed(1) + ' Mb' :
-				contents.files[0].size > 1024 ? (file.size / 1024).toFixed(1) + ' Kb' : contents.files[0].size + ' bytes';
+				content.files[0].size > 1024 ? (file.size / 1024).toFixed(1) + ' Kb' : content.files[0].size + ' bytes';
 			properties.innerHTML = 'Size: <strong>' + size + '</strong>';
 
 			var type = ul.querySelector('li.type');
