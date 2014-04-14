@@ -84,7 +84,11 @@ var RoomFileLister = (function(app) {
 			properties.innerHTML = 'Size: <strong>' + size + '</strong>';
 
 			var type = ul.querySelector('li.type');
-			type.innerHTML = 'Type: <strong>' + (file.type in app.TYPES ? app.TYPES[file.type] : file.type) + '</strong>';
+			if (file.type === '') {
+				ul.removeChild(type);
+			} else {	
+				type.innerHTML = 'Type: <strong>' + (file.type in app.TYPES ? app.TYPES[file.type] : file.type) + '</strong>';	
+			}
 
 			var count_item = ul.querySelector('li.shared');
 			count_item.innerHTML = 'Shared by: <strong>' + content.files.length + ' ' + 
