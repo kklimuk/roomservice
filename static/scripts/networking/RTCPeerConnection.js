@@ -18,8 +18,8 @@ var RTCPeerConnection = (function(app, cache) {
 			name: file_name,
 			buffers: [],
 			type: '',
-			chunk_count: 0,
-			remaining: 0
+			length: 0,
+			arrived: 0
 		});
 
 		if (this.queue.length === 1) {
@@ -93,26 +93,29 @@ var RTCPeerConnection = (function(app, cache) {
 			return window.alert('Failed to download ' + data.name + '. Please try again.');
 		}
 
-		this.queue[0].chunk_count = Math.ceil(data.length / app.MAX_CHUNK_SIZE);
-		this.queue[0].remaining = this.queue[0].chunk_count;
+		this.queue[0].length = data.length;
 		this.queue[0].type = data.type;
 	};
 
 	RTCPeerConnection.prototype.getChunk = function(chunk) {
 		var compiler = this.queue[0];
-		compiler.buffers.push(chunk)
-		compiler.remaining -= 1;
+		compiler.buffers.push(chunk);
+		compiler.arrived = compiler.buffers.reduce(function(length, buffer) {
+			length += buffer.byteLength;
+			return length;
+		}, 0);
 
 		window.dispatchEvent(new CustomEvent('fileprogress', { detail: {
 			name: compiler.name,
-			completion: Math.round((compiler.buffers.length / compiler.chunk_count) * 100)
+			completion: Math.round((compiler.arrived / compiler.length) * 100)
 		} }));
 
-		if (compiler.remaining === 0) {
+		if (compiler.arrived === compiler.length) {
 			var blob = new Blob(compiler.buffers, { type: compiler.type });
 			blob.name = compiler.name;
 			window.dispatchEvent(new CustomEvent('downloadcomplete', { detail: blob }));
 
+			
 			this.queue.shift();
 			if (this.queue.length > 0) {
 				this.startRequest();
