@@ -23,12 +23,14 @@ var RoomFileLister = (function(app) {
 				if (!item) {
 					item = document.createElement('li');
 					item.classList.add('progress-item');
-					item.innerHTML = '<div class="progress"><div></div></div>';
+					item.innerHTML = '<div class="progress"><div>0%</div></div>';
 					el.querySelector('ul').appendChild(item);
 				} else if (completion === 100) {
 					item.parentNode.removeChild(item);
 				} else {
-					item.querySelector('.progress > div').style.width = completion + '%';
+					var inner = item.querySelector('.progress > div')
+					inner.style.width = completion + '%';
+					inner.innerHTML = '&nbsp;' +completion + '%';
 				}
 			});
 		},
@@ -64,25 +66,30 @@ var RoomFileLister = (function(app) {
 				return false;
 			}
 
-			var el = document.createElement('li');
+			var el = document.createElement('li'),
+				file = content.files[0];
+			el.classList.add('group-item');
 			el.innerHTML = this.template.innerHTML;
-			if (this.content)
 
 			var a = el.querySelector('a');
 			a.href = '#';
-			a.innerText = content.files[0].name;
+			a.innerHTML = '<strong>' + file.name + '</strong>'; 
 
 			var ul = el.querySelector('ul');
 			
-			var count_item = document.createElement('li');
-			count_item.innerHTML = 'Owned by <strong>' + content.files.length + '</strong> people.'
-			ul.appendChild(count_item);
+			var properties = ul.querySelector('li.size');
 
-			if (content.self) {
-				var self_item = document.createElement('li');
-				self_item.innerText = 'Cached by you.';
-				ul.appendChild(self_item);
-			}
+			var size = file.size / 1024 > 1024 ? (file.size / (1024 * 1024)).toFixed(1) + ' Mb' :
+				contents.files[0].size > 1024 ? (file.size / 1024).toFixed(1) + ' Kb' : contents.files[0].size + ' bytes';
+			properties.innerHTML = 'Size: <strong>' + size + '</strong>';
+
+			var type = ul.querySelector('li.type');
+			type.innerHTML = 'Type: <strong>' + (file.type in app.TYPES ? app.TYPES[file.type] : file.type) + '</strong>';
+
+			var count_item = ul.querySelector('li.shared');
+			count_item.innerHTML = 'Shared by: <strong>' + content.files.length + ' ' + 
+				(content.files.length > 1 ? 'people' : 'person') + 
+				(content.self ? ' (cached)' : '') + '</strong>';
 
 			a.addEventListener('click', function(event){
 				var data = content.self ? content.files.filter(function(file) {
@@ -91,7 +98,7 @@ var RoomFileLister = (function(app) {
 				window.dispatchEvent(new CustomEvent('filerequest', { detail: data }));
 			});
 
-			this.elements[content.files[0].name] = el;
+			this.elements[file.name] = el;
 
 			return el;
 		},

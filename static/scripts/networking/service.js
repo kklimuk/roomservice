@@ -58,14 +58,16 @@ var service = (function(app, cache, ObservableArray) {
 		}
 	}
 
-	// add files from the cache
+	// add files from the cache and send out information to open connections
 	room_files.extend([].slice.call(cache));
 	cache.listen(function(files, type) {
 		if (type === 'add') {
 			var added = files.map(function(file) {
 				return {
 					source: app.id,
-					name: file.name
+					name: file.name,
+					type: file.type,
+					size: file.size
 				}
 			});
 			room_files.extend(added);

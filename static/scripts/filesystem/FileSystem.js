@@ -255,8 +255,22 @@ window.FileSystem = (function(navigator, Promise) {
 
 	File.prototype.__read__ = function(cache, func) {
 		var self = this;
+
+		function delayCacheClear() {
+			var name = cache + 'timeout__';
+			if (name in self) {
+				clearTimeout(self[name]);
+				delete self[name];
+			}
+
+			self[name] = setTimeout(function() {
+				delete self[cache];
+			}, 30000);
+		}
+
 		return new Promise(function(resolve, reject) {
 			if (typeof self[cache] !== 'undefined') {
+				delayCacheClear();
 				return resolve(self[cache]);
 			}
 
@@ -264,6 +278,7 @@ window.FileSystem = (function(navigator, Promise) {
 
 			reader.onload = function(data) {
 				self[cache] = data.target.result;
+				delayCacheClear();
 				resolve(data.target.result);
 			};
 			reader.onerror = reject;
