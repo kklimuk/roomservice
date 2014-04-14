@@ -73,6 +73,9 @@ def room_id(socket, room_id='/'):
 			break
 
 		decoded = json.loads(message)
+		if decoded['type'] == 'heartbeat':
+			continue
+
 		for person in rooms[room_id]:
 			if 'target' in decoded:
 				if decoded['target'] == person[0]:

@@ -17,6 +17,12 @@ var SignallingChannel = (function(app, WebSocket) {
 				
 				socket.onopen = function(event) {
 					resolve(socket);
+
+					setInterval(function() {
+						self.signal({
+							'type': 'heartbeat'
+						});
+					}, app.HEARTBEAT);
 				};
 
 				socket.onmessage = function(message) {
