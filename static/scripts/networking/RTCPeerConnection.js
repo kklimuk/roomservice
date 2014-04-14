@@ -50,7 +50,7 @@ var RTCPeerConnection = (function(app, cache) {
 				return;
 
 			self.channel.send(chunks.shift());
-			setTimeout(send, 1000);
+			setTimeout(send, app.SEND_DELAY);
 		}, 0);
 	};
 
