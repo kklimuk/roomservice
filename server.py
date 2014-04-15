@@ -79,7 +79,10 @@ def room_id(socket, room_id='/'):
 		for person in rooms[room_id]:
 			if 'target' in decoded:
 				if decoded['target'] == person[0]:
-					person[1].send(message)
+					try:
+						person[1].send(message)
+					except WebSocketError:
+						continue
 					break
 			else:
 				if person[1] != socket:
