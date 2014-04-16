@@ -18,7 +18,4 @@
 			}
 		});
 	});
-
-// Imma let you finish, but I've got the best commit of all TIMEEE
-// HOW BOUT DAT RPG CHEATIN'??!?!??!?!?
 })(window.connections, window.FileLoader, window.SignallingChannel);
